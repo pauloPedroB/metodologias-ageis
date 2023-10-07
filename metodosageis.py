@@ -136,8 +136,6 @@ while(acabar == False):
             confsenha = input("DIGITE A CONFIRMAÇÃO DE SENHA SENHA:\n")
 
             if(senha == confsenha):
-                salt = bcrypt.gensalt(12)
-                hashed_senha = bcrypt.hashpw(senha.encode('utf-8'), salt)
                 if verificar_senha(senha):
                     senhasiguais = True
                 else:
@@ -208,18 +206,20 @@ while(acabar == False):
                     confnovasenha = input("confirme a nova senha")
                     if(novasenha == confnovasenha):
                         salt = bcrypt.gensalt(12)
-                        hashed_senha = bcrypt.hashpw(novasenha.encode('utf-8'), salt)
-                        if verificar_senha(senha):
-                            comand = f'UPDATE tbl_usuario SET senha_usuario = "{hashed_senha}" WHERE email_usuario = "{email}"'
+                        hashed_novasenha = bcrypt.hashpw(novasenha.encode('utf-8'), salt)
+                        if verificar_senha(novasenha):
+                            comand = 'UPDATE tbl_usuario SET senha_usuario = %s WHERE email_usuario = %s'
+                            valores = (hashed_novasenha,email)
+                            cursor.execute(comand,valores)
+                            conexao.commit()
                             senhasiguais = True
                         else:
                             print("Senha deve conter: no mínimo oito caracteres, um caracter especial, um número e uma letra maiúscula")
                     else:
                         print("Senhas não conferem!")
 
-            valores = ()
-            cursor.execute(comand)
-            conexao.commit()
+            
+            
 
         else:
             print("Email não encontrado")
