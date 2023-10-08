@@ -132,7 +132,7 @@ while(acabar == False):
                                         print("INVÁLIDO\n")
                                         
                                 while (datacerta == False):
-                                    dt = input("Digite a data de vencimento do boleto. (dd/mm/aaaa)")
+                                    dt = input("Digite a data de vencimento do boleto. (dd/mm/aaaa): ")
                                     try:
                                         data = datetime.strptime(dt, '%d/%m/%Y')
                                         data_inserida = data.date()
@@ -143,13 +143,35 @@ while(acabar == False):
                                             datacerta = True
                                     except ValueError:
                                         print("Formato de data inválido. Certifique-se de usar o formato 'dd/mm/aaaa'.")
+                                
 
                                 comand = 'INSERT INTO tbl_pagamentos (desc_pagamento,valor_pagamento,data_vencimento_pagamento,fk_id_usuario) values (%s,%s,%s,%s)'
                                 valores = (descricao,saldo,data,registro[0])
                                 cursor.execute(comand, valores)
                                 conexao.commit()
                                 print("BOLETO ADICIONADO COM SUCESSO!!")
-                                
+                            elif opition_menu == 3:
+                                consulta_calendario = False
+                                while(consulta_calendario == False):
+                                    data_calendario = input("Digite a data que voce deseja consultar no calendário. (dd/mm/aaaa): ")
+                                    try:
+                                        data = datetime.strptime(data_calendario, '%d/%m/%Y')
+                                        data_inserida = data.date()
+                                        data_atual = datetime.now().date()
+                                        if data_inserida < data_atual:
+                                            print("Data de consulta não pode ser anterior a data atual\n")
+
+                                        
+
+                                        else:
+                                            cursor.execute("SELECT  u.saldo_atual_usuario - SUM(p.valor_pagamento) AS total_valor FROM tbl_pagamentos p INNER JOIN tbl_usuario u ON p.fk_id_usuario = u.id_usuario WHERE u.id_usuario = %s and p.data_vencimento_pagamento < %s", (registro[0],data_inserida))
+                                            saldo_futuro = cursor.fetchone()
+
+                                            print(saldo_futuro[0])
+                                            consulta_calendario = True
+                                    except ValueError:
+                                        print("Formato de data inválido. Certifique-se de usar o formato 'dd/mm/aaaa'.")
+                            
                         except ValueError:
                             print("ALGO DEU ERRADO\n")
                 else:
