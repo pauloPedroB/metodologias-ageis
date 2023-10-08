@@ -92,7 +92,7 @@ def verificar_senha(senha):
 
 while(acabar == False):
     try:
-        print("BEM VINDO AO DEFINIR NOME\n")
+        print("\n---------------\nBEM VINDO AO DEFINIR NOME\n")
 
         opition = int(input("QUAL OPÇÃO VOCÊ DESEJA?\n1- LOGIN\n2- CADASTRO\n3-RECUPERAR SENHA\n"))
 
@@ -111,15 +111,18 @@ while(acabar == False):
                     print(f"\nLOGIN BEM SUCEDIDO\n---------------\n")
                     menu = True
                     while(menu == True):
-                        print(f"BEM-VINDO(A) {registro[1]}\nVocê tem R$ {registro[7]}\n")
+                        print(f"BEM-VINDO(A) {registro[1]}\nVOCÊ TEM R$ {registro[7]}\n")
                         try:
+                            
                             opition_menu = int(input("Qual opção você deseja?\n 1- RENDAS E DESPESAS\n 2- BOLETOS\n 3- CALENDÁRIO\n"))
                             if opition_menu == 1:
                                 print("")
+                                
                             elif opition_menu == 2:
                                 datacerta = False
                                 valorcorreto = False
                                 descricaoboleto = False
+                                print("\n---------------\nADICIONAR BOLETOS\n")
                                 descricao = input("DESCRIÇÃO DO BOLETO: ")
                                 while (valorcorreto ==False):
                                     try:
@@ -132,17 +135,17 @@ while(acabar == False):
                                         print("INVÁLIDO\n")
                                         
                                 while (datacerta == False):
-                                    dt = input("Digite a data de vencimento do boleto. (dd/mm/aaaa): ")
+                                    dt = input("DIGITE A DATA DE VENCIMENTO DO BOLETO. (DD/MM/AAAA)")
                                     try:
                                         data = datetime.strptime(dt, '%d/%m/%Y')
                                         data_inserida = data.date()
                                         data_atual = datetime.now().date()
                                         if data_inserida < data_atual:
-                                            print("Data de vencimento não pode ser anterior a data atual\n")
+                                            print("DATA DE VENCIMENTO NÃO PODE SER ANTERIOR A DATA ATUAL\n")
                                         else:
                                             datacerta = True
                                     except ValueError:
-                                        print("Formato de data inválido. Certifique-se de usar o formato 'dd/mm/aaaa'.")
+                                        print("FORMATO DE DATA INCORRETO. CERTIFIQUE-SE DE USAR O FORMATO 'DD/MM/AAAA'.")
                                 
 
                                 comand = 'INSERT INTO tbl_pagamentos (desc_pagamento,valor_pagamento,data_vencimento_pagamento,fk_id_usuario) values (%s,%s,%s,%s)'
@@ -153,16 +156,13 @@ while(acabar == False):
                             elif opition_menu == 3:
                                 consulta_calendario = False
                                 while(consulta_calendario == False):
-                                    data_calendario = input("Digite a data que voce deseja consultar no calendário. (dd/mm/aaaa): ")
+                                    data_calendario = input("DIGITE A DATA QUE VOCÊ DESEJA CONSULTAR NO CALENDÁRIO. (DD/MM/AAAA): ")
                                     try:
                                         data = datetime.strptime(data_calendario, '%d/%m/%Y')
                                         data_inserida = data.date()
                                         data_atual = datetime.now().date()
                                         if data_inserida < data_atual:
-                                            print("Data de consulta não pode ser anterior a data atual\n")
-
-                                        
-
+                                            print("DATA DE CONSULTA NÃO PODE SER ANTERIOR A DATA ATUAL\n")
                                         else:
                                             cursor.execute("SELECT  u.saldo_atual_usuario - SUM(p.valor_pagamento) AS total_valor FROM tbl_pagamentos p INNER JOIN tbl_usuario u ON p.fk_id_usuario = u.id_usuario WHERE u.id_usuario = %s and p.data_vencimento_pagamento < %s", (registro[0],data_inserida))
                                             saldo_futuro = cursor.fetchone()
@@ -170,7 +170,7 @@ while(acabar == False):
                                             print(saldo_futuro[0])
                                             consulta_calendario = True
                                     except ValueError:
-                                        print("Formato de data inválido. Certifique-se de usar o formato 'dd/mm/aaaa'.")
+                                        print("FORMATO DE DATA INCORRETO. CERTIFIQUE-SE DE USAR O FORMATO 'DD/MM/AAAA'.")
                             
                         except ValueError:
                             print("ALGO DEU ERRADO\n")
@@ -198,57 +198,57 @@ while(acabar == False):
                     cursor.execute("SELECT * FROM tbl_usuario WHERE email_usuario=%s", (email,))
                     registro = cursor.fetchone()
                     if registro:
-                        print("Email já registrado na nossa base de dados")
+                        print("EMAIL JÁ REGISTRADO EM NOSSA BASE DE DADOS\n")
                     else: 
                         emailcerto= True
                 else:
-                    print("Email inválido")
+                    print("EMAIL INVÁLIDO\n")
                     
             while(senhasiguais ==False):
-                senha = input("DIGITE A SENHA:\n")
-                confsenha = input("DIGITE A CONFIRMAÇÃO DE SENHA SENHA:\n")
+                senha = input("DIGITE A SENHA: ")
+                confsenha = input("DIGITE A CONFIRMAÇÃO DE SENHA SENHA: ")
 
                 if(senha == confsenha):
                     if verificar_senha(senha):
                         senhasiguais = True
                     else:
-                        print("Senha deve conter: no mínimo oito caracteres, um caracter especial, um número e uma letra maiúscula")
+                        print("SENHA DEVE CONTER: NO MÍNIMO 8 CARACTERES, UM CARACTER ESPECIAL, UM NÚMERO E UMA LETRA MAIÚSCULA\n")
                 else:
-                    print("Senhas não conferem")
+                    print("SENHAS NÃO CONFEREM\n")
 
             while(nomevalido==False):
                 regex = r'^[A-Za-z\s]{2,50}$'
-                nome = input("DIGITE O NOME")
+                nome = input("DIGITE O NOME: ")
                 if re.match(regex, nome):
                     nomevalido= True
                 else:
-                    print("Nome inválido")
+                    print("NOME INVÁLIDO\n")
 
             while (datacerta == False):
-                dt = input("Digite sua data de nascimento. (dd/mm/aaaa)")
+                dt = input("DIGITE SUA DATA DE NASCIMENTO (DD/MM/AAAA): ")
                 try:
                     data = datetime.strptime(dt, '%d/%m/%Y')
-                    print("Data inserida:", data)
+                    print("DATA INSERIDA:", data)
                     datacerta = True
                 except ValueError:
-                    print("Formato de data inválido. Certifique-se de usar o formato 'dd/mm/aaaa'.")
+                    print("FORMATO DE DATA INCORRETO. CERTIFIQUE-SE DE USAR O FORMATO 'DD/MM/AAAA'.\n")
             
             while(cpfvalido == False):
-                cpf = input("Digite o cpf")
+                cpf = input("DIGITE SEU CPF: ")
                 if validar_cpf(cpf):
                     cpfvalido = True
                 else:
-                    print("CPF INVÁLIDO")
+                    print("CPF INVÁLIDO\n")
                     
             while(telvalido ==  False):
-                tel = input("Telefone do usuário (COM DD)")
+                tel = input("TELEFONE DO USUÁRIO (COM DD): ")
                 if validar_telefone(tel):
                     telvalido = True
                 else:
-                    print("Telefone inválido")
+                    print("TELEFONE INVÁLIDO\n")
             while(saldocorreto == False):
                 try:
-                    saldo = float(input("Saldo atual: R$ "))
+                    saldo = float(input("SALDO ATUAL: R$ "))
                     if(saldo >= 0):
                         saldocorreto = True
                     else: 
@@ -283,8 +283,8 @@ while(acabar == False):
                     
                     senhasiguais = False
                     while(senhasiguais == False):
-                        novasenha = input("Digite a nova senha: ")
-                        confnovasenha = input("confirme a nova senha: ")
+                        novasenha = input("DIGITE A NOVA SENHA")
+                        confnovasenha = input("CONFIRME A NOVA SENHA")
                         if(novasenha == confnovasenha):
                             salt = bcrypt.gensalt(12)
                             hashed_novasenha = bcrypt.hashpw(novasenha.encode('utf-8'), salt)
@@ -295,15 +295,13 @@ while(acabar == False):
                                 conexao.commit()
                                 senhasiguais = True
                             else:
-                                print("\nSenha deve conter: no mínimo oito caracteres, um caracter especial, um número e uma letra maiúscula\n")
+                                print("SENHA DEVE CONTER: NO MÍNIMO 8 CARACTERES, UM CARACTER ESPECIAL, UM NÚMERO E UMA LETRA MAIÚSCULA\n")
                         else:
-                            print("Senhas não conferem!")
-
-                
-                
-
+                            print("SENHAS NÃO CONFEREM")
+                    else:
+                        print("CÓDIGO INCORRETO")
             else:
-                print("Email não encontrado")
+                print("EMAIL NÃO ENCONTRADO")
 
     except ValueError:
 
