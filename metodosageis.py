@@ -11,6 +11,7 @@ conexao = banco.connect(
     user='root',
     password='Victor@12',
     database='banco_financeiro',
+    
 )
 cursor = conexao.cursor()
 acabar = False
@@ -100,7 +101,7 @@ while(acabar == False):
             senha = input("DIGITE SUA SENHA:\n")
 
             cursor.execute("SELECT * FROM tbl_usuario WHERE email_usuario=%s", (email,))
-        
+            
             registro = cursor.fetchone()
 
             if registro:
@@ -112,7 +113,43 @@ while(acabar == False):
                     while(menu == True):
                         print(f"BEM-VINDO(A) {registro[1]}\nVocê tem R$ {registro[7]}\n")
                         try:
-                            opition_menu = int(input("Qual opção você deseja?\n 1- RENDAS E DESPESAS\n 2- CALENDÁRIO\n"))
+                            opition_menu = int(input("Qual opção você deseja?\n 1- RENDAS E DESPESAS\n 2- BOLETOS\n 3- CALENDÁRIO\n"))
+                            if opition_menu == 1:
+                                print("")
+                            elif opition_menu == 2:
+                                datacerta = False
+                                valorcorreto = False
+                                descricaoboleto = False
+                                descricao = input("DESCRIÇÃO DO BOLETO: ")
+                                while (valorcorreto ==False):
+                                    try:
+                                        saldo = float(input("VALOR DO BOLETO: R$ "))
+                                        if(saldo >= 0):
+                                            valorcorreto = True
+                                        else:
+                                            print("SALDO INVÁLIDO")
+                                    except ValueError:
+                                        print("INVÁLIDO\n")
+                                        
+                                while (datacerta == False):
+                                    dt = input("Digite a data de vencimento do boleto. (dd/mm/aaaa)")
+                                    try:
+                                        data = datetime.strptime(dt, '%d/%m/%Y')
+                                        data_inserida = data.date()
+                                        data_atual = datetime.now().date()
+                                        if data_inserida < data_atual:
+                                            print("Data de vencimento não pode ser anterior a data atual\n")
+                                        else:
+                                            datacerta = True
+                                    except ValueError:
+                                        print("Formato de data inválido. Certifique-se de usar o formato 'dd/mm/aaaa'.")
+
+                                comand = 'INSERT INTO tbl_pagamentos (desc_pagamento,valor_pagamento,data_vencimento_pagamento,fk_id_usuario) values (%s,%s,%s,%s)'
+                                valores = (descricao,saldo,data,registro[0])
+                                cursor.execute(comand, valores)
+                                conexao.commit()
+                                print("BOLETO ADICIONADO COM SUCESSO!!")
+                                
                         except ValueError:
                             print("ALGO DEU ERRADO\n")
                 else:
@@ -166,7 +203,7 @@ while(acabar == False):
                     print("Nome inválido")
 
             while (datacerta == False):
-                dt = input("Digite sua data de nascimento. (dd/mm/ano)")
+                dt = input("Digite sua data de nascimento. (dd/mm/aaaa)")
                 try:
                     data = datetime.strptime(dt, '%d/%m/%Y')
                     print("Data inserida:", data)
@@ -192,6 +229,8 @@ while(acabar == False):
                     saldo = float(input("Saldo atual: R$ "))
                     if(saldo >= 0):
                         saldocorreto = True
+                    else: 
+                        print("SALDO INVÁLIDO")
                 except ValueError:
                     print("INVÁLIDO\n")
 
@@ -222,8 +261,8 @@ while(acabar == False):
                     
                     senhasiguais = False
                     while(senhasiguais == False):
-                        novasenha = input("Digite a nova senha:")
-                        confnovasenha = input("confirme a nova senha")
+                        novasenha = input("Digite a nova senha: ")
+                        confnovasenha = input("confirme a nova senha: ")
                         if(novasenha == confnovasenha):
                             salt = bcrypt.gensalt(12)
                             hashed_novasenha = bcrypt.hashpw(novasenha.encode('utf-8'), salt)
@@ -234,7 +273,7 @@ while(acabar == False):
                                 conexao.commit()
                                 senhasiguais = True
                             else:
-                                print("Senha deve conter: no mínimo oito caracteres, um caracter especial, um número e uma letra maiúscula")
+                                print("\nSenha deve conter: no mínimo oito caracteres, um caracter especial, um número e uma letra maiúscula\n")
                         else:
                             print("Senhas não conferem!")
 
