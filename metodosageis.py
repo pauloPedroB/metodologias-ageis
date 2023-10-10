@@ -8,8 +8,8 @@ import re
 
 conexao = banco.connect(
     host='localhost',
-    user='root',
-    password='Victor@12',
+    user='Pedro Paulo',
+    password='john2004',
     database='banco_financeiro',
     
 )
@@ -164,7 +164,7 @@ while(acabar == False):
                                         if data_inserida < data_atual:
                                             print("DATA DE CONSULTA NÃO PODE SER ANTERIOR A DATA ATUAL\n")
                                         else:
-                                            cursor.execute("SELECT  u.saldo_atual_usuario - SUM(p.valor_pagamento) AS total_valor FROM tbl_pagamentos p INNER JOIN tbl_usuario u ON p.fk_id_usuario = u.id_usuario WHERE u.id_usuario = %s and p.data_vencimento_pagamento < %s", (registro[0],data_inserida))
+                                            cursor.execute("SELECT  u.saldo_atual_usuario - SUM(p.valor_pagamento) AS total_valor FROM tbl_pagamentos p INNER JOIN tbl_usuario u ON p.fk_id_usuario = u.id_usuario WHERE u.id_usuario = %s and p.data_vencimento_pagamento < %s and p.data_vencimento_pagamento > %s", (registro[0],data_inserida,data_atual))
                                             saldo_futuro = cursor.fetchone()
 
                                             print(saldo_futuro[0])
