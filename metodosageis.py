@@ -4,91 +4,17 @@ import random
 import string
 from datetime import datetime
 import re
-
+import funcoes
 
 conexao = banco.connect(
     host='localhost',
-    user='Pedro Paulo',
-    password='john2004',
+    user='root',
+    password='Victor@12',
     database='banco_financeiro',
     
 )
 cursor = conexao.cursor()
 acabar = False
-def validar_cpf(cpf):
-    # Remova caracteres de formatação do CPF, como pontos e traços
-    cpf = ''.join(filter(str.isdigit, cpf))
-
-    # Verifique se o CPF possui 11 dígitos
-    if len(cpf) != 11:
-        return False
-
-    # Calcula o primeiro dígito verificador
-    total = 0
-    for i in range(9):
-        total += int(cpf[i]) * (10 - i)
-    resto = 11 - (total % 11)
-    if resto == 10 or resto == 11:
-        resto = 0
-    if resto != int(cpf[9]):
-        return False
-
-    # Calcula o segundo dígito verificador
-    total = 0
-    for i in range(10):
-        total += int(cpf[i]) * (11 - i)
-    resto = 11 - (total % 11)
-    if resto == 10 or resto == 11:
-        resto = 0
-    if resto != int(cpf[10]):
-        return False
-
-    return True
-
-def validar_telefone(telefone):
-    # Remove caracteres de formatação do telefone, como espaços, parênteses, traços e pontos
-    telefone = re.sub(r'[^\d]', '', telefone)
-
-    # Verifica se o telefone possui pelo menos 8 dígitos (DDD + número local)
-    if len(telefone) < 8 or len(telefone) > 11:
-        return False
-
-    # Verifica se os primeiros 2 dígitos correspondem a um DDD válido (códigos reais podem variar)
-    ddd = telefone[:2]
-    ddd_validos = ['11', '21', '31']  # Adicione outros DDDs válidos, se necessário
-
-    if ddd not in ddd_validos:
-        return False
-
-    # Verifica se o restante dos dígitos são numéricos
-    if not telefone[2:].isdigit():
-        return False
-
-    return True
-
-
-def verificar_senha(senha):
-    # Verifica se a senha tem pelo menos 8 caracteres
-    if len(senha) < 8:
-        return False
-
-    # Verifica se a senha contém pelo menos uma letra maiúscula
-    if not re.search(r'[A-Z]', senha):
-        return False
-
-    # Verifica se a senha contém pelo menos uma letra minúscula
-    if not re.search(r'[a-z]', senha):
-        return False
-
-    # Verifica se a senha contém pelo menos um número
-    if not re.search(r'\d', senha):
-        return False
-
-    # Verifica se a senha contém pelo menos um caractere especial
-    if not re.search(r'[!@#$%^&*()_+{}[\]:;<>,.?~\\-]', senha):
-        return False
-
-    return True
 
 while(acabar == False):
     try:
@@ -114,7 +40,7 @@ while(acabar == False):
                         print(f"BEM-VINDO(A) {registro[1]}\nVOCÊ TEM R$ {registro[7]}\n")
                         try:
                             
-                            opition_menu = int(input("Qual opção você deseja?\n 1- RENDAS E DESPESAS\n 2- BOLETOS\n 3- CALENDÁRIO\n"))
+                            opition_menu = int(input("Qual opção você deseja?\n 1- RENDAS E DESPESAS\n 2- BOLETOS\n 3- CALENDÁRIO\n 4- CARTÃO DE CRÉDITO"))
                             if opition_menu == 1:
                                 print("")
                                 
@@ -209,7 +135,7 @@ while(acabar == False):
                 confsenha = input("DIGITE A CONFIRMAÇÃO DE SENHA SENHA: ")
 
                 if(senha == confsenha):
-                    if verificar_senha(senha):
+                    if funcoes.verificar_senha(senha):
                         senhasiguais = True
                     else:
                         print("SENHA DEVE CONTER: NO MÍNIMO 8 CARACTERES, UM CARACTER ESPECIAL, UM NÚMERO E UMA LETRA MAIÚSCULA\n")
@@ -235,14 +161,14 @@ while(acabar == False):
             
             while(cpfvalido == False):
                 cpf = input("DIGITE SEU CPF: ")
-                if validar_cpf(cpf):
+                if funcoes.validar_cpf(cpf):
                     cpfvalido = True
                 else:
                     print("CPF INVÁLIDO\n")
                     
             while(telvalido ==  False):
                 tel = input("TELEFONE DO USUÁRIO (COM DD): ")
-                if validar_telefone(tel):
+                if funcoes.validar_telefone(tel):
                     telvalido = True
                 else:
                     print("TELEFONE INVÁLIDO\n")
@@ -288,7 +214,7 @@ while(acabar == False):
                         if(novasenha == confnovasenha):
                             salt = bcrypt.gensalt(12)
                             hashed_novasenha = bcrypt.hashpw(novasenha.encode('utf-8'), salt)
-                            if verificar_senha(novasenha):
+                            if funcoes.verificar_senha(novasenha):
                                 comand = 'UPDATE tbl_usuario SET senha_usuario = %s WHERE email_usuario = %s'
                                 valores = (hashed_novasenha,email)
                                 cursor.execute(comand,valores)
